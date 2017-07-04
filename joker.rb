@@ -1,6 +1,8 @@
 require "csv"
+@jokes = []
 
 def print_menu
+  sleep 2
   puts "What would you like to do?"
   puts "1. Hear an amazing joke"
   puts "2. Teach me a new joke"
@@ -28,7 +30,26 @@ end
 def try_get_jokes
   if File.exist?("jokes.csv")
     CSV.foreach("jokes.csv", "r") do |line|
-      gag, punchline = line
+      @gag, @punchline = line
+      create_joke_array
+    end
+    puts "I know #{@jokes.count} amazing jokes!"
+  else
+    puts "I don't know any jokes :("
+  end
+end
+
+def create_joke_array
+  @jokes << {gag: @gag, punchline: @punchline}
+end
+
+def save_jokes
+  CSV.open("jokes.csv", "w") do |csv|
+    @jokes.each do |joke|
+      csv << [joke[:gag], joke[:punchline]]
+    end
+  end
+  puts "Jokes saved to file"
 end
 
 def no_fun
@@ -36,22 +57,14 @@ def no_fun
 end
 
 def joking
-  joke_list = {
-  "A broken pencil" => "Never mind, it's pointless",
-  "Cows go" => "No, cows go moo",
-  "Etch" => "Bless you",
-  "Amos" => "A mosquito",
-  "Lettuce" => "Lettuce in, it's cold",
-  "Beats" => "Beats me"
-  }
-  joke = joke_list.to_a[rand(joke_list.length)]
+  joke = @jokes[rand(@jokes.length)]
   puts "Knock knock"
   response = gets.chomp.downcase
   if response == "who's there?"
-    puts joke[0]
+    puts joke[:gag]
     response = gets.chomp.downcase
-      if response == "#{joke[0].downcase} who?"
-      puts joke[1]
+      if response == "#{joke[:gag].downcase} who?"
+      puts joke[:punchline]
       else
         no_fun
       end
@@ -59,3 +72,6 @@ def joking
       no_fun
   end
 end
+
+try_get_jokes
+interactive_menu
