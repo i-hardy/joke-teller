@@ -2,7 +2,7 @@ require "csv"
 @jokes = []
 
 def print_menu
-  sleep 2
+  sleep 1
   puts "What would you like to do?"
   puts "1. Hear an amazing joke"
   puts "2. Teach me a new joke"
@@ -43,13 +43,22 @@ def create_joke_array
   @jokes << {gag: @gag, punchline: @punchline}
 end
 
+def new_joke
+  puts "Okay, so you say \"Knock knock\", I say \"Who's there?\", and then you say..."
+  @gag = STDIN.gets.chomp.capitalize
+  puts "And I say \"#{@gag} who?\"..."
+  @punchline = STDIN.gets.chomp.capitalize
+  @jokes << {gag: @gag, punchline: @punchline}
+  puts "Haha! I'll remember that one!"
+  save_jokes
+end
+
 def save_jokes
   CSV.open("jokes.csv", "w") do |csv|
     @jokes.each do |joke|
       csv << [joke[:gag], joke[:punchline]]
     end
   end
-  puts "Jokes saved to file"
 end
 
 def no_fun
